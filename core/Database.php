@@ -4,10 +4,19 @@ namespace core;
 use \src\Config;
 
 class Database {
-    private static $_pdo;
+    private static $_pdo = null;
+
+
     public static function getInstance() {
         if(!isset(self::$_pdo)) {
-            self::$_pdo = new \PDO(Config::DB_DRIVER.":dbname=".Config::DB_DATABASE.";host=".Config::DB_HOST, Config::DB_USER, Config::DB_PASS);
+            try {
+                self::$_pdo = new \PDO('mysql:host=127.0.0.1;port=3308;dbname=devsbook', 'root', '');
+                // Configurar o PDO para lançar exceções em caso de erro
+                self::$_pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            } catch (\PDOException $e) {
+                // Tratar erros de conexão
+                die('Connection failed: ' . $e->getMessage());
+            }
         }
         return self::$_pdo;
     }
